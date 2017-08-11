@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">hello/api_definition.go (94.4%)</option>
+				
+				<option value="file1">hello/hello_world.go (100.0%)</option>
+				
+				<option value="file2">hello/hello_world_health_checker.go (100.0%)</option>
+				
+				<option value="file3">hello/swagger.go (0.0%)</option>
+				
+				<option value="file4">test/servicetest/config_initialize.go (100.0%)</option>
+				
+				<option value="file5">test/servicetest/logger_initialize.go (100.0%)</option>
+				
+				<option value="file6">test/servicetest/service_initialize.go (100.0%)</option>
+				
+				<option value="file7">test/servicetest/service_test_helper.go (100.0%)</option>
+				
+				<option value="file8">test/servicetest/test_web_server.go (100.0%)</option>
+				
+				<option value="file9">test/utils/request_helper.go (100.0%)</option>
+				
+				<option value="file10">test/utils/response_status_helper.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package hello
+
+import (
+        "fmt"
+        "github.com/jabong/floRest/src/common/constants"
+        "github.com/jabong/floRest/src/common/logger"
+        "github.com/jabong/floRest/src/common/orchestrator"
+        "github.com/jabong/floRest/src/common/ratelimiter"
+        "github.com/jabong/floRest/src/common/utils/healthcheck"
+        "github.com/jabong/floRest/src/common/versionmanager"
+)
+
+type HelloApi struct {
+}
+
+func (a *HelloApi) GetVersion() versionmanager.Version <span class="cov8" title="1">{
+        return versionmanager.Version{
+                Resource: "HELLO",
+                Version:  "V1",
+                Action:   "GET",
+                BucketId: constants.ORCHESTRATOR_BUCKET_DEFAULT_VALUE, //todo - should it be a constant
+        }
+}</span>
+
+func (a *HelloApi) GetOrchestrator() orchestrator.Orchestrator <span class="cov8" title="1">{
+        logger.Error("Hello World Pipeline Creation begin")
+
+        helloWorldOrchestrator := new(orchestrator.Orchestrator)
+        helloWorldWorkflow := new(orchestrator.WorkFlowDefinition)
+        helloWorldWorkflow.Create()
+
+        //Creation of the nodes in the workflow definition
+        helloWorldNode := new(HelloWorld)
+        helloWorldNode.SetID("hello world node 1")
+        eerr := helloWorldWorkflow.AddExecutionNode(helloWorldNode)
+        if eerr != nil </span><span class="cov0" title="0">{
+                logger.Error(fmt.Sprintln(eerr))
+        }</span>
+
+        //Set start node for the search workflow
+        <span class="cov8" title="1">helloWorldWorkflow.SetStartNode(helloWorldNode)
+
+        //Assign the workflow definition to the Orchestrator
+        helloWorldOrchestrator.Create(helloWorldWorkflow)
+
+        logger.Info(helloWorldOrchestrator.String())
+        logger.Info("Hello World Pipeline Created")
+        logger.Error("Hello World Pipeline Created")
+        return *helloWorldOrchestrator</span>
+}
+
+func (a *HelloApi) GetHealthCheck() healthcheck.HealthCheckInterface <span class="cov8" title="1">{
+        return new(HelloWorldHealthCheck)
+}</span>
+
+func (a *HelloApi) Init() <span class="cov0" title="0">{
+        //api initialization should come here
+}</span>
+
+func (a *HelloApi) GetRateLimiter() ratelimiter.RateLimiter <span class="cov8" title="1">{
+        return nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package hello
+
+import (
+        errors "common/appconstant"
+        florest_constants "github.com/jabong/floRest/src/common/constants"
+        workflow "github.com/jabong/floRest/src/common/orchestrator"
+)
+
+type HelloWorld struct {
+        id string
+}
+
+func (n *HelloWorld) SetID(id string) <span class="cov1" title="1">{
+        n.id = id
+}</span>
+
+func (n HelloWorld) GetID() (id string, err error) <span class="cov10" title="2">{
+        return n.id, nil
+}</span>
+
+func (a HelloWorld) Name() string <span class="cov10" title="2">{
+        return "HelloWord"
+}</span>
+
+func (a HelloWorld) Execute(io workflow.WorkFlowData) (workflow.WorkFlowData, error) <span class="cov1" title="1">{
+        //Business Logic
+        return io, &amp;florest_constants.AppError{Code: errors.FunctionalityNotImplementedErrorCode, Message: "invalid request"}
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package hello
+
+type HelloWorldHealthCheck struct {
+}
+
+func (n HelloWorldHealthCheck) GetName() string <span class="cov8" title="1">{
+        return "hello world"
+}</span>
+
+func (n HelloWorldHealthCheck) GetHealth() map[string]interface{} <span class="cov8" title="1">{
+        return map[string]interface{}{
+                "status": "success",
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">// @APIVersion 1.0.0
+// @basePath /newApp/v1
+package hello
+
+// @Title list
+// @Description get hello
+// @Accept  json
+// @Router /hello [get]
+func list() <span class="cov0" title="0">{}</span>
+
+// @Title geteSku
+// @Description get sku
+// @Accept  json
+// @Param   Limit     query    string     true        "limit"
+// @Param   Offset     query    string     true        "offset"
+// @Param   X-Jabong-Sessionid     header    string     true        "ssn"
+// @Param   X-Jabong-Token     header    string     true        "token"
+// @Router /hello/update [get]
+func geteSku() <span class="cov0" title="0">{}</span>
+
+// @Title remove
+// @Description delete sku
+// @Accept  json
+// @Param   Sku     path    string     true        "sku to be removed"
+// @Param   X-Jabong-Sessionid     header    string     true        "ssn"
+// @Param   X-Jabong-Token     header    string     true        "token"
+// @Router /hello [delete]
+func remove() <span class="cov0" title="0">{}</span>
+
+// @Title add
+// @Description add sku
+// @Accept  json
+// @Param   BodyParam     body    AddParam     true        "body"
+// @Param   X-Jabong-Sessionid     header    string     true        "ssn"
+// @Param   X-Jabong-Token     header    string     true        "token"
+// @Router /hello [post]
+func add() <span class="cov0" title="0">{}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package servicetest
+
+import (
+        "github.com/jabong/floRest/src/service"
+)
+
+var globalConfigJson = `
+    {
+           "AppName":"newApp",
+           "AppVersion":"1.0.0",
+           "ServerPort":"8080",
+           "LogConfFile":"conf/logger.json",
+           "MonitorConfig":{  
+              "AppName":"newApp",
+              "Platform":"DatadogAgent",
+              "AgentServer":"datadog:8125",
+              "Verbose":false,
+              "Enabled":true,
+              "MetricsServer":"datadog:8065"
+           },
+           "Performance":{  
+              "UseCorePercentage":100,
+              "GCPercentage":1000
+           },
+           "ApplicationConfig":{
+           "Hello":{
+              "ResponseHeaders":{
+                 "CacheControl":{
+                    "ResponseType":"public",
+                    "NoCache":false,
+                    "NoStore":false,
+                    "MaxAgeInSeconds":300
+                 }
+              }
+           }
+        }
+   }`
+
+func initTestConfig() <span class="cov8" title="1">{
+        cm := new(service.ConfigManager)
+        cm.InitializeGlobalConfigFromJson(globalConfigJson)
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package servicetest
+
+import (
+        "github.com/jabong/floRest/src/common/logger"
+)
+
+func initTestLogger() <span class="cov8" title="1">{
+        configLogger := `
+        {
+            "ProfilerEnabled": false,
+            "LogLevel": 1,
+            "DefaultLogType": "dummyLoggerDefault",
+            "AppName" : "newApp-test-",
+            "FileLogger": [
+                {
+                    "Key": "fileLoggerDefault",
+                    "Path": "/tmp/",
+                    "FileNamePrefix": "search-suggest-"            
+                }
+            ],
+            "DummyLogger": [
+                {
+                    "Key": "dummyLoggerDefault"            
+                }        
+            ]
+        }`
+
+        logger.InitialiseFromJson(configLogger)
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package servicetest
+
+import (
+        "common/appconstant"
+        "github.com/jabong/floRest/src/service"
+        "hello"
+)
+
+func InitializeTestService() <span class="cov8" title="1">{
+        service.RegisterHttpErrors(appconstant.AppErrorCodeToHttpCodeMap)
+        service.RegisterApi(new(hello.HelloApi))
+        initTestLogger()
+
+        initTestConfig()
+
+        service.InitVersionManager()
+
+        initialiseTestWebServer()
+
+        service.InitHealthCheck()
+
+}</span>
+
+func PurgeTestService() <span class="cov0" title="0">{
+
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package servicetest
+
+import (
+        "encoding/json"
+        utilhttp "github.com/jabong/floRest/src/common/utils/http"
+        gm "github.com/onsi/gomega"
+)
+
+func validateHealthCheckResponse(responseBody string) <span class="cov8" title="1">{
+        var utilResponse utilhttp.Response
+        err := json.Unmarshal([]byte(responseBody), &amp;utilResponse)
+        gm.Expect(err).To(gm.BeNil())
+
+        utilResponseData := utilResponse.Data
+        if v, ok := utilResponseData.(map[string]interface{}); ok </span><span class="cov8" title="1">{
+                _, serviceNodePresent := v["service"]
+                gm.Expect(serviceNodePresent).To(gm.Equal(true))
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package servicetest
+
+import (
+        "github.com/jabong/floRest/src/service"
+        "net/http"
+        "net/http/httptest"
+)
+
+type testWebserver struct {
+}
+
+func (ws testWebserver) Response(req *http.Request) *httptest.ResponseRecorder <span class="cov10" title="2">{
+
+        w := httptest.NewRecorder()
+        webServer := new(service.Webserver)
+        webServer.ServiceHandler(w, req)
+
+        return w
+
+}</span>
+
+var testHttpServer *testWebserver = nil
+
+func initialiseTestWebServer() <span class="cov1" title="1">{
+        if testHttpServer == nil </span><span class="cov1" title="1">{
+                testHttpServer = new(testWebserver)
+        }</span>
+}
+
+func GetResponse(req *http.Request) *httptest.ResponseRecorder <span class="cov10" title="2">{
+        return testHttpServer.Response(req)
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package utils
+
+import (
+        "net/http"
+)
+
+func CreateTestRequest(httpMethod string, urlString string) *http.Request <span class="cov10" title="2">{
+        request, _ := http.NewRequest(httpMethod, urlString, nil)
+        request.RequestURI = urlString
+        return request
+}</span>
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package utils
+
+import (
+        "github.com/jabong/floRest/src/common/constants"
+        utilhttp "github.com/jabong/floRest/src/common/utils/http"
+        gm "github.com/onsi/gomega"
+        "net/http"
+        "net/http/httptest"
+)
+
+func MatchHeaderStatus(responseRecorder *httptest.ResponseRecorder, httpCode int) <span class="cov0" title="0">{
+        gm.Expect(responseRecorder.HeaderMap.Get("Content-Type")).To(gm.Equal("application/json"))
+        gm.Expect(responseRecorder.HeaderMap.Get("Cache-Control")).To(gm.Equal("public, max-age=300"))
+        gm.Expect(responseRecorder.Code).To(gm.Equal(httpCode))
+}</span>
+
+//MatchSuccessResponseStatus verifies status for successful response
+func MatchSuccessResponseStatus(responseBody *utilhttp.Response) <span class="cov0" title="0">{
+        gm.Expect(responseBody.Status.HttpStatusCode).To(gm.Equal(constants.HttpCode(200)))
+        gm.Expect(responseBody.Status.Success).To(gm.Equal(true))
+}</span>
+
+//MatchVersionableNotFound
+func MatchVersionableNotFound(responseBody *utilhttp.Response) <span class="cov0" title="0">{
+        gm.Expect(responseBody.Status.HttpStatusCode).To(gm.Equal(constants.HttpCode(http.StatusNotFound)))
+        gm.Expect(responseBody.Status.Errors[0].Code).To(gm.Equal(constants.AppErrorCode(1601)))
+        gm.Expect(responseBody.Status.Errors[0].Message).To(gm.Equal("Versionable not found in version manager"))
+        //TODO
+        //gm.Expect(responeBody.DebugData).To(gm.Equal(""))
+}</span>
+
+//MatchNotFoundResponseStatus verifies status for Not Found response
+func MatchNotFoundResponseStatus(responseBody *utilhttp.Response) <span class="cov0" title="0">{
+        gm.Expect(responseBody.Status.HttpStatusCode).To(gm.Equal(constants.HttpCode(404)))
+        gm.Expect(responseBody.Status.Success).To(gm.Equal(false))
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
