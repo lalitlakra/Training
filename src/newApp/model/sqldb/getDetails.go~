@@ -1,0 +1,68 @@
+package sqldb
+
+import (
+	dbconn "common/dao/mysqlconn"
+	// //"database/sql"
+	"fmt"
+	// //"github.com/go-sql-driver/mysql"
+	"log"
+	//  "newApp/getSelfhelpDetail"
+)
+
+type test struct {
+	Ename string `json:"name" bson:"name"`
+	//Lname string `json:"lname" bson:"lname"`
+	EmpId int `json:"id" bson:"id"`
+}
+
+//type Employees struct {
+var obj []test
+
+//}
+
+func getEmployee() []test {
+
+	query := `SELECT EmpName, EmpId from Employee`
+	//dbconn.Initialize()
+	//fmt.Println(query)
+	rows, err := dbconn.Mysqldb.Query(query)
+
+	// //db, err := sql.Open("mysql",
+	// //"root:jabong@123@tcp(localhost:3306)/MyDatabase")
+	// fmt.Println("1")
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// //defer db.Close()
+
+	var (
+		id   int
+		name string
+	)
+	// //rows, err := db.Query("select EmpName, EmpId from Employee ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&name, &id)
+		fmt.Println("2")
+		o1 := test{EmpId: id, Ename: name}
+
+		//	o1.EmpId = id
+		//fmt.Println(o1)
+
+		///var Arr *Employees
+		obj = append(obj, o1)
+		//Employees.obj = append(Employees.obj, o1)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(id, name)
+	}
+
+	return obj
+
+}

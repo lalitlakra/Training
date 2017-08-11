@@ -1,0 +1,11 @@
+mode: atomic
+test/servicetest/test_web_server.go:12.80,20.2 4 2
+test/servicetest/test_web_server.go:24.32,25.27 1 1
+test/servicetest/test_web_server.go:25.27,27.3 1 1
+test/servicetest/test_web_server.go:30.64,32.2 1 2
+test/servicetest/config_initialize.go:39.23,42.2 2 1
+test/servicetest/logger_initialize.go:7.23,29.2 2 1
+test/servicetest/service_initialize.go:9.30,22.2 7 1
+test/servicetest/service_initialize.go:24.25,26.2 0 0
+test/servicetest/service_test_helper.go:9.55,15.60 5 1
+test/servicetest/service_test_helper.go:15.60,18.3 2 1
